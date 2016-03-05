@@ -4,19 +4,19 @@ if len(sys.argv) < 1:
 	sys.exit(0)
 
 file = open(sys.argv[1],"r") #Open the file for reading
-bufferead = file.read()
+bufferead = file.read() #Contains the whole C file input.
 
 
 Debug = False
 
 functionsList = {} #This list contains all the function names in that "C" file
-standardKeywords = ["void","int","long long int","float","double","struct","long int","static"]
 
-bracesState = 0
-blockCommentState = 0
-lineCommentState = 0
-HeaderState = 0
-tempString = ""
+bracesState = 0            #Removes everything inside a given function
+blockCommentState = 0      #Removes everything inside block comments(Multi line comments)
+lineCommentState = 0       #Removes everything inside single comments
+HeaderState = 0            #Removes all the header lines
+
+tempString = "" #This is the string which has to be further processed
 
 for counter in range(0,len(bufferead)):
 	
@@ -67,12 +67,13 @@ functionsList = []
 for i in tempFunctionslist:
 	finalString=""
 	#i.strip('')
-	for k in i:
+	for k in i: #Processing each string
 		if k == "(":
 			break
 		finalString += k
-	
-	if finalString not in functionsList and finalString != "":  #Checking if that function already exists
+		
+	#Checking if that function already exists(Important for function definitions which can cause reptitions)
+	if finalString not in functionsList and finalString != "":  
 		functionsList.append(finalString)
 
 if Debug is True:
