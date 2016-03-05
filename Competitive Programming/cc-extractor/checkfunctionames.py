@@ -4,8 +4,7 @@ if len(sys.argv) < 1:
 	sys.exit(0)
 
 file = open(sys.argv[1],"r") #Open the file for reading
-bufferead = file.read() #Contains the whole C file input.
-
+data = file.read() #Contains the whole C file input.
 
 Debug = False
 
@@ -18,27 +17,27 @@ HeaderState = 0            #Removes all the header lines
 
 tempString = "" #This is the string which has to be further processed
 
-for counter in range(0,len(bufferead)):
+for ind in range(0,len(data)):
 	
-	if bufferead[counter] == "{":
+	if data[ind] == "{":
 		bracesState += 1
 	
-	elif bufferead[counter] == "}":
+	elif data[ind] == "}":
 		bracesState -= 1
 	
-	elif counter < len(bufferead)-1 and bufferead[counter] == "/" and bufferead[counter+1] == "*": #Ensuring there is no Index Error
+	elif ind < len(data)-1 and data[ind] == "/" and data[ind+1] == "*": #Ensuring there is no Index Error
 		blockCommentState += 1
 	
-	elif counter < len(bufferead)-1 and bufferead[counter] == "*" and bufferead[counter+1] == "/": #Closing Block Comments
+	elif ind < len(data)-1 and data[ind] == "*" and data[ind+1] == "/": #Closing Block Comments
 		blockCommentState -= 1
 	
-	elif counter < len(bufferead)-1 and bufferead[counter] == "/" and bufferead[counter+1] == "/":
+	elif ind < len(data)-1 and data[ind] == "/" and data[ind+1] == "/":
 		lineCommentState += 1
 
-	elif bufferead[counter] == "#":
+	elif data[ind] == "#":
 		HeaderState += 1
 
-	elif bufferead[counter] == "\n" and (HeaderState > 0 or lineCommentState > 0):
+	elif data[ind] == "\n" and (HeaderState > 0 or lineCommentState > 0):
 		if HeaderState:
 			HeaderState -= 1
 		else:
@@ -47,8 +46,8 @@ for counter in range(0,len(bufferead)):
 	if Debug is True:
 		print(bracesState,"Braces",blockCommentState,"blockCommentState","HeaderState",HeaderState)
 
-	if blockCommentState == 0 and HeaderState == 0 and bracesState == 0 and lineCommentState == 0 and bufferead[counter] != "}" and bufferead[counter] != "/" and bufferead[counter] != "*":
-		tempString += bufferead[counter]
+	if blockCommentState == 0 and HeaderState == 0 and bracesState == 0 and lineCommentState == 0 and data[ind] != "}" and data[ind] != "/" and data[ind] != "*":
+		tempString += data[ind]
 
 tempString = tempString.split()
 tempFunctionslist = []
@@ -66,12 +65,11 @@ if Debug is True:
 functionsList = []
 for i in tempFunctionslist:
 	finalString=""
-	#i.strip('')
 	for k in i: #Processing each string
 		if k == "(":
 			break
 		finalString += k
-		
+
 	#Checking if that function already exists(Important for function definitions which can cause reptitions)
 	if finalString not in functionsList and finalString != "":  
 		functionsList.append(finalString)
