@@ -1,0 +1,35 @@
+Complier - GCC (Linux)
+While compiling the cc-extractor code, the following warnings were encountered -
+
+1) Warning Message : "warning: ignoring return value of ‘write’, declared with attribute warn_unused_result [-Wunused-result]" 
+
+The function "write(arguments)" is called many times in different 'C' files. This function has an integer type return value. In all of the cases where the complier throws a warning, this return value has been ignored. The function was just called as if it were having a void type return value.  
+
+It is always safe to take the written value from the function and check if anything has gone wrong during the function execution. This would remove the warning.
+
+
+
+2) Warning Message : "warning: format not a string literal and no format arguments [-Wformat-security]"
+
+sprintf(buf + strlen(buf), (char *) encoder->encoded_crlf);
+
+In general, sprintf also takes an additional argument - The format of the buffer, whether it is a string or an integer and so on. But here no format has been mentioned. This is as good as writing "printf(str)" where str is a character string. Instead it should have been printf("%s",str).
+We need not mention the format type if we wish to print a string literal such as printf("Hello World"). But here we do nat have a string literal.
+So sprintf(buf + strlen(buf), "%s", (char *) encoder->encoded_crlf); would remove the warning.
+
+
+3) Warning Message : "implicit declaration of function ‘temporarily_close_output’ [-Wimplicit-function-declaration]"
+
+This particularly means that a function has been called for which the compiler has not yet seen a declaration/protype. This might have happened due to the missing of declaration function in a header file. 
+
+It could be easily fixed by including such function declarations in any header file which is used by that file.
+(For example in lib_ccx/ccx_encoders_common.h)
+Also it has to be seen that there are no multiple declarations (By using #ifdef).
+
+
+4) Warning Message : "warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 6 has type ‘uint64_t’ [-Wformat=]"
+
+This is a general warning which gives incorrect format for printing. uint65_t is a non-standard format type in C. While, sprintf requires an argument saying which type of format (format specifier) is required, here %llx has been used where in the argument is actually of type uint64_t. 
+
+One thing which could have been done was to use "%" format specifier. This did not throw any warning.
+Another thing which could have done is to typecaste uint64_t to unsigned long long hex before printing. This also would prevent the warning from coming up. (But in the output "lu" would be added as a suffix to the result).
