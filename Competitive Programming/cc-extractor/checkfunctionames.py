@@ -1,3 +1,6 @@
+#Python3 file
+
+
 import sys
 if len(sys.argv) < 1:
 	print("Give a valid C file as an argument")
